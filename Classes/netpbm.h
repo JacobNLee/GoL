@@ -20,6 +20,16 @@ class PBM: public Image
 
 	void invert();
 
+	void deleteImage();
+	void newImage();
+
+	void rotate90(int rotations);
+	void upscale(int factor);
+	void downscale(int factor);
+
+	//copy constructor
+	//overload equals
+	//overload [] or ()
 	PBM();
 	~PBM();
 };
