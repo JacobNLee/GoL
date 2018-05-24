@@ -5,6 +5,7 @@ typedef unsigned int uint;
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
+#include <cmath>
 
 //Base Class
 class Image

@@ -7,9 +7,8 @@ bool PBM::loadImage( std::string loadFrom )
 	fin.open( loadFrom.c_str() );
 
 	readImageHeader();
-
 	deleteImageData();
-	allocateImageData();
+	imageData = allocateImageData();
 	readImageData();
 
 	fin.close();
@@ -22,10 +21,11 @@ bool PBM::loadImage( std::string loadFrom )
 bool PBM::saveImage( std::string saveTo )
 {	
 	fout.open( saveTo.c_str() );
+
 	writeImage();
 
-
 	fout.close();
+
 	return true;
 }
 
@@ -80,7 +80,6 @@ bool PBM::readImageHeader()
 		std::getline(fin, comments);
 	}
 	
-
 	fin >> width;
 	fin >> height;
 
@@ -88,19 +87,52 @@ bool PBM::readImageHeader()
 	
 }
 
-void PBM::allocateImageData()
+void PBM::newImage(int newWidth, int newHeight)
+{
+	deleteImageData();
+
+	width  = newWidth;
+	height = newHeight;
+
+	imageData = allocateImageData();
+	fillImage( 0 );
+}
+
+void PBM::fillImage( char fillWith )
+{
+	int rIndex, cIndex;
+
+	for( rIndex = 0; rIndex < height; ++rIndex )
+	{	
+		for( cIndex = 0; cIndex < width; ++cIndex )
+		{
+			imageData[ rIndex ][ cIndex ] = (char) fillWith;
+		}
+	}
+}
+
+char** PBM::allocateImageData()
 {
 	int index;
-	imageData = new char*[ height ];
+	char** newImageData;
+	newImageData = new char*[ height ];
 	for( index = 0; index < height; ++index )
 	{
-		imageData[ index ] = new char[ width ];
+		newImageData[ index ] = new char[ width ];
 	}
+
+	return newImageData;
+}
+
+void PBM::deleteImage()
+{
+	deleteImageData();
+	width = height = 0;
 }
 
 void PBM::deleteImageData()
 {
-	if( imageData != NULL )
+	if( !isEmpty() )
 	{
 		int index;
 
@@ -112,6 +144,18 @@ void PBM::deleteImageData()
 		imageData = NULL;
 	}
 
+}
+
+bool PBM::isEmpty()
+{
+	if( imageData == NULL )
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 void PBM::readImageData()
@@ -146,4 +190,59 @@ void PBM::writeImage()
 		}
 		fout << std::endl;
 	}
+}
+
+
+void PBM::upscale()
+{
+	int rIndex, cIndex, index;
+	char** oldImageData = imageData;
+
+	width  = width * 2;
+	height = height * 2;
+	imageData = allocateImageData();
+	
+	for( rIndex = 0; rIndex < height; ++rIndex )
+	{
+		for( cIndex = 0; cIndex < width; ++cIndex )
+		{
+			imageData[ rIndex ][ cIndex ] = oldImageData[ rIndex / 2][ cIndex / 2 ];
+		}
+	}
+
+
+	for( index = 0; index < height/2; ++index )
+	{
+		delete [] oldImageData[ index ];
+	}
+	delete [] oldImageData;
+	oldImageData = NULL;
+	
+}
+
+void PBM::downscale()
+{
+	int rIndex, cIndex, index;
+	char** oldImageData = imageData;
+
+	width  = width / 2;
+	height = height / 2;
+	imageData = allocateImageData();
+
+	
+	for( rIndex = 0; rIndex < height; ++rIndex )
+	{
+		for( cIndex = 0; cIndex < width; ++cIndex )
+		{
+			//maybe add a mask to average the downscaling
+			imageData[ rIndex ][ cIndex ] = oldImageData[ rIndex * 2][ cIndex * 2 ];
+		}
+	}
+
+	for( index = 0; index < height/2; ++index )
+	{
+		delete [] oldImageData[ index ];
+	}
+	delete [] oldImageData;
+	oldImageData = NULL;
 }

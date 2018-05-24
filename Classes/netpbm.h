@@ -8,7 +8,7 @@ class PBM: public Image
 
 	bool readImageHeader();
 
-	void allocateImageData();
+	char** allocateImageData();
 	void deleteImageData();
 	void readImageData();
 
@@ -21,11 +21,15 @@ class PBM: public Image
 	void invert();
 
 	void deleteImage();
-	void newImage();
+	void newImage(int newWidth, int newHeight);
 
 	void rotate90(int rotations);
-	void upscale(int factor);
-	void downscale(int factor);
+	void upscale();
+	void downscale();
+
+	void fillImage( char fillwith );
+
+	bool isEmpty();
 
 	//copy constructor
 	//overload equals

@@ -16,9 +16,10 @@ int main()
 {
 	PBM pbm;
 	pbm.loadImage("test.pbm");
-	pbm.invert();
-	pbm.saveImage("testInverted.pbm");
+	pbm.upscale();
+	pbm.downscale();
 
+	pbm.saveImage("testInverted.pbm");
 
 	return 0;
 }
